@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const API_URL = "http://localhost:5000/todos";
+const API_URL = "https://crystal-todo-backend.onrender.com/todos";
 
 function App() {
   const [todos, setTodos] = useState([]);
