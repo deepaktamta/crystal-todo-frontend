@@ -1,123 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+
 :root {
-  --primary-bg: #0f172a;
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --accent-color: #38bdf8;
-  --text-main: #f8fafc;
+  --bg-dark: #020617;
+  --card-bg: rgba(15, 23, 42, 0.65);
+  --accent-blue: #38bdf8;
+  --accent-purple: #818cf8;
+  --text-white: #f8fafc;
   --text-dim: #94a3b8;
+  --border-glass: rgba(255, 255, 255, 0.1);
 }
 
 body {
   margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--primary-bg);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0, transparent 50%), 
-    radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.1) 0, transparent 50%);
-  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-white);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-x: hidden;
+}
+
+/* ✨ Creative Background Blobs */
+body::before, body::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.4;
+}
+
+body::before {
+  top: -10%;
+  left: -10%;
+  background: var(--accent-blue);
+}
+
+body::after {
+  bottom: -10%;
+  right: -10%;
+  background: var(--accent-purple);
 }
 
 .app-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
   padding: 20px;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .crystal-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 30px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  background: var(--card-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-glass);
+  border-radius: 32px;
+  padding: 40px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 25px;
-  letter-spacing: -0.025em;
-  background: linear-gradient(to right, #fff, #38bdf8);
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-blue) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  display: block;
+}
+
+/* 🚀 Improved Input Group */
 .input-group {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 8px;
   margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.input-group:focus-within {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
 }
 
 input[type="text"] {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  padding: 12px 15px;
   color: white;
+  font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s;
-}
-
-input[type="text"]:focus {
-  border-color: var(--accent-color);
 }
 
 .selectors {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  padding: 0 8px 8px 8px;
 }
 
 select {
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  color: var(--text-dim);
+  border-radius: 12px;
   padding: 8px;
+  font-size: 0.8rem;
   flex: 1;
+  cursor: pointer;
 }
 
 .create-btn {
-  background: white;
-  color: black;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  color: white;
   border: none;
   border-radius: 12px;
-  padding: 10px 20px;
+  padding: 10px 24px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.create-btn:active {
-  transform: scale(0.95);
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+}
+
+/* 📝 Animated Task Cards */
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .todo-item {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
-.todo-item.completed {
-  opacity: 0.5;
-  text-decoration: line-through;
+.todo-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(5px);
+  border-color: rgba(56, 189, 248, 0.3);
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-color);
-  box-shadow: 0 0 10px var(--accent-color);
+.todo-info p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.todo-info small {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
