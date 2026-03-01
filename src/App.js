@@ -1,94 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css';
+import './App.css'; // Assuming your glassmorphism CSS is here
 
+// 🌍 YOUR LIVE RENDER BACKEND URL
 const API_URL = "https://crystal-todo-backend.onrender.com/todos";
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [task, setTask] = useState("");
+  const [taskInput, setTaskInput] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("General");
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
 
-  useEffect(() => { fetchTodos(); }, []);
+  // 1. Fetch all tasks when the app loads
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
   const fetchTodos = async () => {
-    const res = await axios.get(API_URL);
-    setTodos(res.data);
+    try {
+      const res = await axios.get(API_URL);
+      setTodos(res.data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
   };
 
-  const addTask = async () => {
-    if (!task.trim()) return;
-    await axios.post(API_URL, { task, priority, category });
-    setTask("");
-    fetchTodos();
+  // 2. ✨ THE FIX: Create a new task using POST
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    if (!taskInput.trim()) return;
+
+    try {
+      const res = await axios.post(API_URL, {
+        task: taskInput,
+        priority: priority,
+        category: category
+      });
+      
+      // Add the new task to the top of the list and clear input
+      setTodos([res.data, ...todos]);
+      setTaskInput("");
+    } catch (err) {
+      console.error("Error creating task:", err);
+    }
   };
 
-  const toggleComplete = async (todo) => {
-    await axios.put(`${API_URL}/${todo._id}`, { completed: !todo.completed });
-    fetchTodos();
+  // 3. Toggle Completion (Update)
+  const toggleComplete = async (id) => {
+    try {
+      const res = await axios.put(`${API_URL}/${id}`);
+      setTodos(todos.map(todo => todo._id === id ? res.data : todo));
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
   };
 
-  const deleteTodo = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-    fetchTodos();
+  // 4. Delete Task
+  const deleteTask = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      setTodos(todos.filter(todo => todo._id !== id));
+    } catch (err) {
+      console.error("Error deleting task:", err);
+    }
   };
-
-  // Feature: Advanced Filtering & Searching
-  const filteredTodos = todos.filter(t => {
-    const matchesSearch = t.task.toLowerCase().includes(search.toLowerCase());
-    const matchesTab = filter === "All" ? true : filter === "Active" ? !t.completed : t.completed;
-    return matchesSearch && matchesTab;
-  });
 
   return (
     <div className="app-container">
-      <div className="glass-card">
-        <div className="header">
-          <h1 className="title">Crystal Studio</h1>
-          <input 
-            className="search-bar" 
-            placeholder="Search tasks..." 
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        <div className="tabs">
-          {["All", "Active", "Completed"].map(tab => (
-            <button 
-              key={tab} 
-              className={filter === tab ? "active-tab" : ""} 
-              onClick={() => setFilter(tab)}
-            >{tab}</button>
-          ))}
-        </div>
+      <div className="crystal-card">
+        <h1>Crystal Studio</h1>
         
-        <div className="input-panel">
-          <input value={task} onChange={(e) => setTask(e.target.value)} placeholder="New Project..." />
-          <div className="row">
+        <form onSubmit={handleCreate} className="input-group">
+          <input 
+            type="text" 
+            placeholder="New Project..." 
+            value={taskInput}
+            onChange={(e) => setTaskInput(e.target.value)}
+          />
+          <div className="selectors">
             <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-              <option>High</option><option>Medium</option><option>Low</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
             </select>
             <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option>General</option><option>College</option><option>Work</option>
+              <option value="General">General</option>
+              <option value="College">College</option>
+              <option value="Work">Work</option>
             </select>
-            <button className="add-btn" onClick={addTask}>Create</button>
+            <button type="submit" className="create-btn">Create</button>
           </div>
-        </div>
+        </form>
 
         <div className="todo-list">
-          {filteredTodos.map(todo => (
-            <div key={todo._id} className={`item priority-${todo.priority} ${todo.completed ? 'done' : ''}`}>
-              <div className="content" onClick={() => toggleComplete(todo)}>
-                <div className="dot"></div>
-                <div>
-                  <div className="t-text">{todo.task}</div>
-                  <div className="t-meta">{todo.category} • {todo.priority}</div>
+          {todos.map(todo => (
+            <div key={todo._id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+              <div className="todo-info" onClick={() => toggleComplete(todo._id)}>
+                <span className="status-dot"></span>
+                <div className="text-content">
+                  <p>{todo.task}</p>
+                  <small>{todo.category} • {todo.priority}</small>
                 </div>
               </div>
-              <button className="del" onClick={() => deleteTodo(todo._id)}>✕</button>
+              <button className="delete-btn" onClick={() => deleteTask(todo._id)}>×</button>
             </div>
           ))}
         </div>
