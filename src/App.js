@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css'; // Assuming your glassmorphism CSS is here
+import './App.css'; 
 
 // 🌍 YOUR LIVE RENDER BACKEND URL
 const API_URL = "https://crystal-todo-backend.onrender.com/todos";
@@ -10,6 +10,7 @@ function App() {
   const [taskInput, setTaskInput] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("General");
+  const [filter, setFilter] = useState("All");
 
   // 1. Fetch all tasks when the app loads
   useEffect(() => {
@@ -41,7 +42,7 @@ function App() {
       setTodos([res.data, ...todos]);
       setTaskInput("");
     } catch (err) {
-      console.error("Error creating task:", err);
+      console.error("Error creating task. Check CORS in backend:", err);
     }
   };
 
@@ -68,15 +69,28 @@ function App() {
   return (
     <div className="app-container">
       <div className="crystal-card">
-        <h1>Crystal Studio</h1>
+        <header>
+          <h1>Crystal Studio</h1>
+          <div className="search-bar">
+            <input type="text" placeholder="Search tasks..." disabled />
+          </div>
+        </header>
         
+        <div className="filter-tabs">
+          <button className={filter === "All" ? "active" : ""} onClick={() => setFilter("All")}>All</button>
+          <button className={filter === "Active" ? "active" : ""} onClick={() => setFilter("Active")}>Active</button>
+          <button className={filter === "Completed" ? "active" : ""} onClick={() => setFilter("Completed")}>Completed</button>
+        </div>
+
         <form onSubmit={handleCreate} className="input-group">
-          <input 
-            type="text" 
-            placeholder="New Project..." 
-            value={taskInput}
-            onChange={(e) => setTaskInput(e.target.value)}
-          />
+          <div className="main-input">
+            <input 
+              type="text" 
+              placeholder="New Project..." 
+              value={taskInput}
+              onChange={(e) => setTaskInput(e.target.value)}
+            />
+          </div>
           <div className="selectors">
             <select value={priority} onChange={(e) => setPriority(e.target.value)}>
               <option value="Low">Low</option>
@@ -93,18 +107,22 @@ function App() {
         </form>
 
         <div className="todo-list">
-          {todos.map(todo => (
-            <div key={todo._id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-              <div className="todo-info" onClick={() => toggleComplete(todo._id)}>
-                <span className="status-dot"></span>
-                <div className="text-content">
-                  <p>{todo.task}</p>
-                  <small>{todo.category} • {todo.priority}</small>
+          {todos.length === 0 ? (
+            <p className="empty-msg">No tasks found. Create one above!</p>
+          ) : (
+            todos.map(todo => (
+              <div key={todo._id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                <div className="todo-info" onClick={() => toggleComplete(todo._id)}>
+                  <div className={`status-dot ${todo.priority.toLowerCase()}`}></div>
+                  <div className="text-content">
+                    <p>{todo.task}</p>
+                    <small>{todo.category} • {todo.priority}</small>
+                  </div>
                 </div>
+                <button className="delete-btn" onClick={() => deleteTask(todo._id)}>×</button>
               </div>
-              <button className="delete-btn" onClick={() => deleteTask(todo._id)}>×</button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
